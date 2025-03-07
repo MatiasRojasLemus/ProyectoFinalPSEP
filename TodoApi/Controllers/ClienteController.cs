@@ -18,7 +18,7 @@ namespace TodoApi.Controllers
         //Obtener todos los clientes
         //GET: api/Cliente
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
+        public async Task<ActionResult<IEnumerable<Cliente>>> ObtenerClientes()
         {
             return await _context.Clientes.ToListAsync();
         }
@@ -27,7 +27,7 @@ namespace TodoApi.Controllers
         //Obtener un cliente en particular
         //GET: api/Cliente/3
         [HttpGet("{id}")]
-        public async Task<ActionResult<Cliente>> GetCliente(long id)
+        public async Task<ActionResult<Cliente>> ObtenerCliente(long id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
 
@@ -44,10 +44,11 @@ namespace TodoApi.Controllers
         public async Task<ActionResult<Cliente>> AnadirCliente(Cliente cliente){
             _context.Clientes.Add(cliente);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCliente), new {id = cliente.Id}, cliente);
+            return CreatedAtAction(nameof(ObtenerCliente), new {id = cliente.Id}, cliente);
         }
 
         //Modificar un cliente por id
+        //PUT: api/Cliente/3
         [HttpPut("{id}")]
         public async Task<IActionResult> ModificarCliente(long id, Cliente cliente)
         {
