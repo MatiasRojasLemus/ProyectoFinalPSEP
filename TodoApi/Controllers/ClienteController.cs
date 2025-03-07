@@ -38,6 +38,21 @@ namespace TodoApi.Controllers
             return cliente;
         }
 
+        //Obtener peliculas de un cliente en particular
+        //GET: api/Cliente/3/peliculas
+        [HttpGet("{id}/peliculas")]
+        public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasCliente(long id)
+        {
+            var cliente =  await _context.Clientes.FindAsync(id);
+
+            if(cliente == null){
+                return NotFound();
+            }
+
+            return cliente.PeliculasAlquiladas;
+        }
+
+
         //Añadir un cliente
         //POST: api/Cliente
         [HttpPost]
@@ -46,6 +61,7 @@ namespace TodoApi.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(ObtenerCliente), new {id = cliente.Id}, cliente);
         }
+        
 
         //Modificar un cliente por id
         //PUT: api/Cliente/3
@@ -95,5 +111,7 @@ namespace TodoApi.Controllers
         private bool ClienteExiste(long id){
             return _context.Clientes.Any(e => e.Id == id);
         }
+
+        
     }
 }
