@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ namespace TodoApi.Controllers
 
         //Obtener todas las peliculas
         //GET: api/Pelicula
-        [HttpGet]
+        [HttpGet("todas")]
         public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculas()
         {
             return await _context.Peliculas.ToListAsync();
@@ -35,6 +36,36 @@ namespace TodoApi.Controllers
             }
 
             return pelicula;
+        }
+
+        //Obtener solo las peliculas alquiladas
+        //GET: api/Pelicula
+        [HttpGet("alquiladas")]
+        public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasAlquiladas()
+        {
+            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Disponible == true).ToListAsync();
+
+            if(peliculasAlquiladas.Count == 0){
+                return NotFound();
+            }
+
+            return peliculasAlquiladas;
+
+        }
+
+        //Obtener solo las peliculas sin alquilar
+        //GET: api/Pelicula
+        [HttpGet("sin-alquilar")]
+        public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasSinAlquilar()
+        {
+            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Disponible == false).ToListAsync();
+
+            if(peliculasAlquiladas.Count == 0){
+                return NotFound();
+            }
+
+            return peliculasAlquiladas;
+
         }
 
         //Añadir una Pelicula
