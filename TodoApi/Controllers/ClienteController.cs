@@ -69,7 +69,6 @@ namespace TodoApi.Controllers
         //Alquilar una pelicula y añadir la lista de peliculas alquiladas de un Cliente
         //PUT: api/Cliente
         [HttpPut("Alquilar-pelicula")]
-        
         public async Task<IActionResult> AlquilarPelicula(long clienteId, long peliculaId)
         {
             var cliente = await _context.Clientes
@@ -121,7 +120,6 @@ namespace TodoApi.Controllers
         //Desalquilar una pelicula de un cliente
         //PUT: api/Cliente
         [HttpPut("Desalquilar-pelicula")]
-
         public async Task<IActionResult> DesalquilarPelicula(long clienteId, long peliculaId)
         {
             var cliente = await _context.Clientes
