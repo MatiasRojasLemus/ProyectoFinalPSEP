@@ -1,4 +1,3 @@
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
@@ -29,7 +28,9 @@ namespace TodoApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Cliente>> ObtenerCliente(long id)
         {
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes
+                            .Include(c => c.PeliculasAlquiladas)
+                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if(cliente == null){
                 return NotFound();
@@ -38,12 +39,14 @@ namespace TodoApi.Controllers
             return cliente;
         }
 
-        //Obtener peliculas de un cliente en particular
+        //Obtener peliculas alquiladas de un cliente en particular
         //GET: api/Cliente/3/peliculas
         [HttpGet("{id}/peliculas")]
         public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasCliente(long id)
         {
-            var cliente =  await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes
+                            .Include(c => c.PeliculasAlquiladas)
+                            .FirstOrDefaultAsync(c => c.Id == id);
 
             if(cliente == null){
                 return NotFound();
@@ -61,34 +64,108 @@ namespace TodoApi.Controllers
             await _context.SaveChangesAsync();
             return CreatedAtAction(nameof(ObtenerCliente), new {id = cliente.Id}, cliente);
         }
-        
 
-        //Modificar un cliente por id
-        //PUT: api/Cliente/3
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ModificarCliente(long id, Cliente cliente)
+
+        //Alquilar una pelicula y añadir la lista de peliculas alquiladas de un Cliente
+        //PUT: api/Cliente
+        [HttpPut("Alquilar-pelicula")]
+        
+        public async Task<IActionResult> AlquilarPelicula(long clienteId, long peliculaId)
         {
-            //Comprobar si el id del parametro y el id del cliente coincide
-            if(id != cliente.Id){
-                return BadRequest();
+            var cliente = await _context.Clientes
+                            .Include(c => c.PeliculasAlquiladas)
+                            .FirstOrDefaultAsync(c => c.Id == clienteId);            
+            
+            var pelicula = await _context.Peliculas.FindAsync(peliculaId);
+
+            if (cliente == null)
+            {
+                return BadRequest("El cliente no existe.");
             }
 
-            _context.Entry(cliente).State = EntityState.Modified;
+            if (pelicula == null)
+            {
+                return BadRequest("La película no existe.");
+            }
 
+            if (pelicula.Alquilado)
+            {
+                return BadRequest("La película ya está alquilada.");
+            }
+
+            // Alquilar la película
+            cliente.PeliculasAlquiladas.Add(pelicula);
+            pelicula.Alquilado = true;
+
+            // Marcar como modificados
+            _context.Entry(cliente).State = EntityState.Modified;
+            _context.Entry(pelicula).State = EntityState.Modified;
+
+            // Guardar cambios
             try
             {
                 await _context.SaveChangesAsync();
             }
-            catch(DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException)
             {
-                if(!ClienteExiste(id)){
-                    return NotFound();
-                }
-                else
+                if (!ClienteExiste(clienteId))
                 {
-                    throw;
+                    return NotFound("El cliente no existe.");
                 }
+                throw;
             }
+
+            return NoContent();
+        }
+
+        //Desalquilar una pelicula de un cliente
+        //PUT: api/Cliente
+        [HttpPut("Desalquilar-pelicula")]
+
+        public async Task<IActionResult> DesalquilarPelicula(long clienteId, long peliculaId)
+        {
+            var cliente = await _context.Clientes
+                            .Include(c => c.PeliculasAlquiladas)
+                            .FirstOrDefaultAsync(c => c.Id == clienteId);            
+            
+            var pelicula = await _context.Peliculas.FindAsync(peliculaId);
+
+            if (cliente == null)
+            {
+                return BadRequest("El cliente no existe.");
+            }
+
+            if(pelicula == null){
+                return BadRequest("La pelicula no existe");
+            }
+
+            if (!cliente.PeliculasAlquiladas.Contains(pelicula))
+            {
+                return BadRequest("El cliente no tiene alquilada esta pelicula");
+            }
+
+            // Desalquilar la película
+            cliente.PeliculasAlquiladas.Remove(pelicula);
+            pelicula.Alquilado = false;
+
+            // Marcar como modificados
+            _context.Entry(cliente).State = EntityState.Modified;
+            _context.Entry(pelicula).State = EntityState.Modified;
+
+            // Guardar cambios
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!ClienteExiste(clienteId))
+                {
+                    return NotFound("El cliente no existe.");
+                }
+                throw;
+            }
+
             return NoContent();
         }
 
@@ -96,7 +173,9 @@ namespace TodoApi.Controllers
         //DELETE: api/Cliente/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> EliminarCliente(long id){
-            var cliente = await _context.Clientes.FindAsync(id);
+            var cliente = await _context.Clientes
+                .Include(c => c.PeliculasAlquiladas)
+                .FirstOrDefaultAsync(c => c.Id == id);
             
             if(cliente == null){
                 return NotFound();
@@ -111,7 +190,5 @@ namespace TodoApi.Controllers
         private bool ClienteExiste(long id){
             return _context.Clientes.Any(e => e.Id == id);
         }
-
-        
     }
 }

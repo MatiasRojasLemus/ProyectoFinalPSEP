@@ -7,5 +7,5 @@ public class Pelicula
     public required string Director { get; set; }
     public required string Sinopsis { get; set; }
     public required double Precio {get; set;}
-    public required bool Disponible {get; set;}
+    public required bool Alquilado {get; set;}
 }

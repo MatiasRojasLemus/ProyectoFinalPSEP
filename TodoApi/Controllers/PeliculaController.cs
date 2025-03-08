@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoApi.Models;
@@ -43,7 +41,7 @@ namespace TodoApi.Controllers
         [HttpGet("alquiladas")]
         public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasAlquiladas()
         {
-            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Disponible == true).ToListAsync();
+            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Alquilado == true).ToListAsync();
 
             if(peliculasAlquiladas.Count == 0){
                 return NotFound();
@@ -58,7 +56,7 @@ namespace TodoApi.Controllers
         [HttpGet("sin-alquilar")]
         public async Task<ActionResult<IEnumerable<Pelicula>>> ObtenerPeliculasSinAlquilar()
         {
-            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Disponible == false).ToListAsync();
+            var peliculasAlquiladas = await _context.Peliculas.Where(pelicula => pelicula.Alquilado == false).ToListAsync();
 
             if(peliculasAlquiladas.Count == 0){
                 return NotFound();
@@ -77,33 +75,6 @@ namespace TodoApi.Controllers
             return CreatedAtAction(nameof(ObtenerPelicula), new {id = pelicula.Id}, pelicula);
         }
 
-
-        //Modificar una Pelicula por id
-        //PUT: api/Pelicula/3
-        [HttpPut("{id}")]
-        public async Task<IActionResult> ModificarPelicula(long id, Pelicula pelicula){
-            if(id != pelicula.Id){
-                return BadRequest();
-            }
-
-            _context.Entry(pelicula).State = EntityState.Modified;
-
-            try
-            {
-               await _context.SaveChangesAsync(); 
-            }
-            catch(DbUpdateConcurrencyException)
-            {
-                if(!PeliculaExiste(id)){
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return NoContent();
-        }
 
         //Eliminar una pelicula
         //DELETE: api/Pelicula/5
@@ -124,7 +95,5 @@ namespace TodoApi.Controllers
         private bool PeliculaExiste(long id){
             return _context.Peliculas.Any(e => e.Id == id);
         }
-
-
     }
 }
