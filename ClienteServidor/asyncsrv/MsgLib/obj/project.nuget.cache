@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "fi15A6E1hnI=",
+  "dgSpecHash": "pPDsXInAkNs=",
   "success": true,
-  "projectFilePath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj",
+  "projectFilePath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

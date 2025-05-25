@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj",
+      "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj",
       "projectName": "MsgLib",
-      "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj",
+      "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj",
       "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-      "outputPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\obj\\",
+      "outputPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",

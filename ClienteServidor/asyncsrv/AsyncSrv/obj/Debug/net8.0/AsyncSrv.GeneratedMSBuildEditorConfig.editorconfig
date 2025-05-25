@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = AsyncSrv
-build_property.ProjectDir = D:\PSEP\PRACTICA\UT3\RojasLemusMatias-AsyncSerializedKjut\asyncsrv\AsyncSrv\
+build_property.ProjectDir = D:\PSEP\PRACTICA\UT5\ProyectoFinalPSEP\ClienteServidor\asyncsrv\AsyncSrv\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

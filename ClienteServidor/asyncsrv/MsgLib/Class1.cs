@@ -6,33 +6,28 @@ namespace MsgLib
     [Serializable]
     public class Mensaje : ISerializable
     {
-        public string Sms { get; set; }
-        public string Resumen { get; set; }
-        public DateTime Stamp { get; set; }
-        public Mensaje() { }
-        public Mensaje(string sms, string resumen)
+        public required string opcionCliente { get; set; }
+        public DateTime stamp { get; set; }
+        public Mensaje(string opcionCliente)
         {
-            this.Sms = sms;
-            this.Resumen = resumen;
-            Stamp = DateTime.Now;
+            this.opcionCliente = opcionCliente;
+            this.stamp = DateTime.Now;
         }
         public Mensaje(SerializationInfo info, StreamingContext context)
         {
-            Sms = info.GetString("mensaje");
-            Resumen = (string)info.GetValue("resumen", typeof(string));
-            Stamp = (DateTime)info.GetValue("fecha", typeof(DateTime));
+            this.opcionCliente = info.GetString("opcion");
+            this.stamp = (DateTime)info.GetValue("fecha", typeof(DateTime));
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            info.AddValue("mensaje", Sms);
-            info.AddValue("resumen", Resumen);
-            info.AddValue("fecha", Stamp);
+            info.AddValue("opcion", this.opcionCliente);
+            info.AddValue("fecha", this.stamp);
         }
 
         public override string ToString()
         {
-            return $"Mensaje: {Sms}\nResumen: {Resumen}\nFecha  : {Stamp}";
+            return $"Opcion seleccionada: {this.opcionCliente}\nFecha  : {this.stamp}";
         }
     }
 

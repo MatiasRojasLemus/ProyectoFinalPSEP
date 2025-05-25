@@ -7,27 +7,38 @@ using System.Threading;
 using System.Text;
 using System.Text.Json;
 using MsgLib;
+using Constants.MenuConstants;
+using TodoApi.Controllers;
+using TodoApi.Models
 
 namespace AsyncSrv
 {
     // State object for reading client data asynchronously  
     public class StateObject
     {
-        // Client  socket.  
+        // Socket cliente.  
         public Socket workSocket = null;
-        // Size of receive buffer.   !!!!
+        // Tamaño del buffer receptor.   !!!!
         public const int BufferSize = 10; // 1024;
-        // Receive buffer.  
+        // Buffer receptor.  
         public byte[] buffer = new byte[BufferSize];
-        // Received data string.  
+        // Datos string recibidos.  
         public StringBuilder sb = new StringBuilder();
+        //String con la peticion enviada por el cliente.
+        public string peticionCliente = "";
+
     }
 
     public class AsynchronousSocketListener
     {
+        //Controlador de los Clientes
+        private static PeliculaController peliculaController = new PeliculaController(new VideoclubDbContext(new DbContextOptions<VideoclubDbContext>()));
+        //Controlador de las peliculas
+        private static ClienteController clienteController = new ClienteController(new VideoclubDbContext(new DbContextOptions<VideoclubDbContext>()));
+
         private static int PORT = 11000;
 
-        // Thread signal.  
+        // Hilo de señal.  
         public static ManualResetEvent allDone = new ManualResetEvent(false);
 
         public static int Main(String[] args)
@@ -38,16 +49,16 @@ namespace AsyncSrv
 
         public static void StartListening()
         {
-            // Establish the local endpoint for the socket.  
+            // Estable un endpoint local para el socket
             IPAddress ipAddress = GetLocalIpAddress();
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, PORT);
 
-            // Create a TCP/IP socket.  
+            // Crea un socket TCP/IP  
             Socket listener = new Socket(ipAddress.AddressFamily,
                 SocketType.Stream, ProtocolType.Tcp);
-            
 
-            // Bind the socket to the local endpoint and listen for incoming connections.  
+
+            // Vincula el socket al endpoint local y escucha a la espera de futuras conexiones
             try
             {
                 listener.Bind(localEndPoint);
@@ -55,16 +66,38 @@ namespace AsyncSrv
 
                 while (true)
                 {
-                    // Set the event to nonsignaled state.  
+                    // Establece el evento a un estado de "sin señal"
                     allDone.Reset();
 
-                    // Start an asynchronous socket to listen for connections.  
+                    //Inicia un socket asincrono a la espera de recibir conexiones  
                     Console.WriteLine("Waiting for a connection at {0}...", localEndPoint);
                     listener.BeginAccept(
                         new AsyncCallback(AcceptCallback),
                         listener);
 
-                    // Wait until a connection is made before continuing.  
+                    switch (this.peticionCliente)
+                    {
+                        //Peliculas
+                        case MenuContants.OBTENER_TODAS_LAS_PELICULAS: break;
+                        case MenuContants.OBTENER_UNA_PELICULA: break;
+                        case MenuContants.OBTENER_PELICULAS_EN_ALQUILER: break;
+                        case MenuContants.OBTENER_PELICULAR_SIN_ALQUILAR: break;
+                        case MenuContants.ANADIR_UNA_PELICULA: break;
+                        case MenuContants.ELIMINAR_UNA_PELICULA: break;
+
+                        //Clientes
+                        case MenuContants.OBTENER_TODOS_LOS_CLIENTES: break;
+                        case MenuContants.OBTENER_UN_CLIENTE: break;
+                        case MenuContants.OBTENER_PELICULAS_ALQUILADAS_DE_UN_CLIENTE: break;
+                        case MenuContants.ANADIR_UN_CLIENTE: break;
+                        case MenuContants.ALQUILAR_UNA_PELICULA: break;
+                        case MenuContants.DESALQUILAR_UNA_PELICULA: break;
+                        case MenuContants.ELIMINAR_UN_CLIENTE: break;
+
+                    }
+
+
+                    // Espera hasta que se realice una conexion antes de continuar
                     allDone.WaitOne();
                 }
 
@@ -78,14 +111,14 @@ namespace AsyncSrv
 
         public static void AcceptCallback(IAsyncResult ar)
         {
-            // Signal the main thread to continue.  
+            // Señal del hilo principal para continuar
             allDone.Set();
 
-            // Get the socket that handles the client request.  
+            // Obtiente el socket que maneja la peticion del cliente
             Socket listener = (Socket)ar.AsyncState;
             Socket handler = listener.EndAccept(ar);
 
-            // Create the state object.  
+            // Crea un Objeto de Estado
             StateObject state = new StateObject();
             state.workSocket = handler;
             handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
@@ -94,52 +127,53 @@ namespace AsyncSrv
 
         public static void ReadCallback(IAsyncResult ar)
         {
-            Console.Write("_"); // Trace
-            // Retrieve the state object and the handler socket  
-            // from the asynchronous state object.  
+            Console.Write("_"); // Rastro
+            // Recupera el Objeto de Estado y el socket que maneja la peticion del cliente
+            // del Objeto de Estado Asincrono
             StateObject state = (StateObject)ar.AsyncState;
             Socket handler = state.workSocket;
 
-            // Read data from the client socket.   
+            // Lee los datos del socket cliente 
             int bytesRead = handler.EndReceive(ar);
 
-            // Gets the amount of data that has been received from the network and 
-            // is available to be read.
+            // Recibe la cantidad de datos que han sido recibidos de la red y
+            // estan disponibles para ser leidos
             if (handler.Available > 0)
             {
-                Console.Write("0"); // Trace
+                Console.Write("0"); // Rastro
                 state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
-                // Not all data received. Get more.  
+                // No se recibieron todos los datos. Obtener mas.  
                 handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0, new AsyncCallback(ReadCallback), state);
             }
             else
             {
                 if (bytesRead > 0)
                 {
-                    Console.Write("1"); // Trace
+                    Console.Write("1"); // Rastro
                     state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
                 }
                 if (state.sb.Length > 1)
                 {
-                Console.WriteLine("2"); // Trace
-                Console.WriteLine(state.sb.ToString());
+                    Console.WriteLine("2"); // Rastro
+                    Console.WriteLine(state.sb.ToString());
 
-                byte[] byteArray = Encoding.UTF8.GetBytes(state.sb.ToString());
+                    byte[] byteArray = Encoding.UTF8.GetBytes(state.sb.ToString());
 
-                // Deserialize the JSON string into a Mensaje object
-                Mensaje recibido = JsonSerializer.Deserialize<Mensaje>(state.sb.ToString());
+                    // Deserializa el string JSON y lo convierte en un objeto Mensaje
+                    this.peticionCliente = state.sb.ToString();
+                    Mensaje recibido = JsonSerializer.Deserialize<Mensaje>(state.sb.ToString());
 
-                // All the data has been read from the client. Display it on the console.  
-                Console.WriteLine("Read {0} bytes from socket.\n{1}",
-                    byteArray.Length, recibido);
+                    // Todos los datos que han sido leidos desde el cliente. Reproduciendolos en consola. 
+                    Console.WriteLine("Read {0} bytes from socket.\n{1}",
+                        byteArray.Length, recibido);
 
-                // Echo the data back to the client.  
-                Send(handler, recibido);
+                    // Manda de vuelta los datos al cliente  
+                    Send(handler, recibido);
                 }
                 else
                 {
-                    // If nothing has been received
-                    Console.Write("3"); // Trace
+                    // Si nada a sido recibido
+                    Console.Write("3"); // Rastro
                 }
             }
 
@@ -147,11 +181,11 @@ namespace AsyncSrv
 
         private static void Send(Socket handler, Mensaje data)
         {
-            // Convert the message to JSON
+            // Convierte el mensaje a JSON
             string jsonData = JsonSerializer.Serialize(data);
             byte[] byteData = Encoding.UTF8.GetBytes(jsonData);
-            
-            // Begin sending the data to the remote device.  
+
+            // Comienza a enviar los datos al dispositivo remoto.
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                                 new AsyncCallback(SendCallback), handler);
         }
@@ -160,10 +194,10 @@ namespace AsyncSrv
         {
             try
             {
-                // Retrieve the socket from the state object.  
+                // Recupera el socket del Objeto de Estado
                 Socket handler = (Socket)ar.AsyncState;
 
-                // Complete sending the data to the remote device.  
+                // Termina de enviar los datos al dispositivo remoto.
                 int bytesSent = handler.EndSend(ar);
                 Console.WriteLine("Sent {0} bytes to client.", bytesSent);
 
@@ -216,6 +250,10 @@ namespace AsyncSrv
             }
         }
 
+    }
+    
+    private async void MostrarPeliculas() {
+        
     }
 
 

@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj": {}
+    "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj": {}
   },
   "projects": {
-    "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj": {
+    "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj",
+        "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj",
         "projectName": "AsyncSrv",
-        "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj",
+        "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\AsyncSrv\\AsyncSrv.csproj",
         "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-        "outputPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\AsyncSrv\\obj\\",
+        "outputPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\AsyncSrv\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -28,8 +28,8 @@
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj": {
-                "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj"
+              "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj": {
+                "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj"
               }
             }
           }
@@ -68,14 +68,14 @@
         }
       }
     },
-    "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj": {
+    "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj",
+        "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj",
         "projectName": "MsgLib",
-        "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\MsgLib.csproj",
+        "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\MsgLib.csproj",
         "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-        "outputPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asyncsrv\\MsgLib\\obj\\",
+        "outputPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asyncsrv\\MsgLib\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",

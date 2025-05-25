@@ -8,6 +8,6 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MsgLib
-build_property.ProjectDir = D:\PSEP\PRACTICA\UT3\RojasLemusMatias-AsyncSerializedKjut\asyncsrv\MsgLib\
+build_property.ProjectDir = D:\PSEP\PRACTICA\UT5\ProyectoFinalPSEP\ClienteServidor\asyncsrv\MsgLib\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 

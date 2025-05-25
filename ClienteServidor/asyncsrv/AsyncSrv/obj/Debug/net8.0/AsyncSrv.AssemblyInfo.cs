@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AsyncSrv")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+57ec9fdc165e9bafa317a1d8b999adf6b3153cc0")]
 [assembly: System.Reflection.AssemblyProductAttribute("AsyncSrv")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AsyncSrv")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

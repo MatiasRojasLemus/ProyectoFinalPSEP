@@ -8,7 +8,7 @@ namespace TodoApi.Controllers
     [ApiController]
     public class ClienteController: ControllerBase
     {
-        private readonly VideoclubDbContext _context;
+        public readonly VideoclubDbContext _context;
         public ClienteController(VideoclubDbContext context){
             _context = context;
         }

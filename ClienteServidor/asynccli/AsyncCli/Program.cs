@@ -7,34 +7,41 @@ using System.Threading;
 using System.Text;
 using System.Text.Json;
 using MsgLib;
+using Constants.MenuConstants;
+
+
 
 namespace AsyncCli
 {
+
     // State object for receiving data from remote device.  
     public class StateObject
     {
-        // Client socket.  
+        // Socket cliente.  
         public Socket workSocket = null;
-        // Size of receive buffer.  
+
+        // Tamaño del buffer recibido.  
         public const int BufferSize = 10; // 1024;
-        // Receive buffer.  
+
+        // Buffer recibido.  
         public byte[] buffer = new byte[BufferSize];
-        // Received data string.  
+
+        // Dato de objeto string recibido.  
         public StringBuilder sb = new StringBuilder();
         public int mensajesEnviados = 0;
     }
 
     public class AsynchronousClient
     {
-        // The port number for the remote device.  
+        // El numero de puerto para el dispositivo remoto 
         private const int PORT = 11000;
 
-        // ManualResetEvent instances signal completion.  
+        //ManualResetEvent instances signal completion.
         private static ManualResetEvent connectDone = new ManualResetEvent(false);
         private static ManualResetEvent sendDone = new ManualResetEvent(false);
         private static ManualResetEvent receiveDone = new ManualResetEvent(false);
 
-        // The response from the remote device.  
+        // La respuesta desde el dispositivo remoto.  
         private static String response = String.Empty;
 
         public static int Main(String[] args)
@@ -45,48 +52,48 @@ namespace AsyncCli
 
         private static void StartClient()
         {
-            // Connect to a remote device.  
+            // Se conecta a un dispositivo remoto.  
             try
-            {   
+            {
                 while (true)
                 {
-                // Establish the remote endpoint for the socket. 
-                IPAddress ipAddress = GetFirstLocalIpV4Address();
-                IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
+                    // Establece el endpoint remoto para el socket. 
+                    IPAddress ipAddress = GetFirstLocalIpV4Address();
+                    IPEndPoint remoteEP = new IPEndPoint(ipAddress, PORT);
 
-                // Create a TCP/IP socket.  
-                Socket client = new Socket(ipAddress.AddressFamily,
-                    SocketType.Stream, ProtocolType.Tcp);
+                    // Crea un socket TCP/IP.  
+                    Socket cliente = new Socket(ipAddress.AddressFamily,
+                        SocketType.Stream, ProtocolType.Tcp);
 
-                // Connect to the remote endpoint.  
-                client.BeginConnect(remoteEP,
-                new AsyncCallback(ConnectCallback), client);
-                connectDone.WaitOne(); //Blocks the current thread until the current WaitHandle receives a signal.
-                
-                //We make the user send as much strings as they want
-                Console.WriteLine("Write you message subject: ");
-                string sms = Console.ReadLine();
-                Console.WriteLine("Write your message: ");
-                string resumen = Console.ReadLine();
 
-                //If the "sms" and "resumen" equals null, we close connection and finish the program
-                if(sms == "" && resumen == ""){
-                    // Release the socket.
-                    client.Shutdown(SocketShutdown.Both);
-                    client.Close();
-                    break;
-                }
+                    // Se conecta al endpoint remoto.  
+                    cliente.BeginConnect(remoteEP,
+                    new AsyncCallback(ConnectCallback), cliente);
+                    connectDone.WaitOne(); //Bloquea el hilo reciente hasta que la instancia WaitHandle actual reciba una señal
 
-                Mensaje mensaje = new Mensaje(sms, resumen);
-                Send(client, mensaje);
-                sendDone.WaitOne();
+                    string opcionMenu = MenuPrincipal();
 
-                // Receive the response from the remote device.
-                Receive(client);
-                receiveDone.WaitOne();
+                    if (opcionMenu == MenuConstants.SALIR_DEL_PROGRAMA)
+                    {
+                        cliente.Shutdown(SocketShutdown.Both);
+                        cliente.Close();
+                        break;
+                    }
 
-                // Write the response to the console.  
-                Console.WriteLine("Response received:\n{0}", response);
+                    Mensaje mensaje = new Mensaje(opcionMenu);
+
+                    //Mandamos un mensaje
+                    Send(cliente, mensaje);
+
+                    //Bloqueamos el hilo actual hasta recibir una respuesta
+                    sendDone.WaitOne();
+
+                    // Recibe la respuesta del dispositivo remoto.
+                    Receive(cliente);
+                    receiveDone.WaitOne();
+
+                    // Escribe la respuesta en la consola.  
+                    Console.WriteLine("Response received:\n{0}", response);
                 }
 
             }
@@ -125,16 +132,16 @@ namespace AsyncCli
         {
             try
             {
-                // Retrieve the socket from the state object.  
-                Socket client = (Socket)ar.AsyncState;
+                //Recupera el socket del objecto de estado
+                Socket cliente = (Socket)ar.AsyncState;
 
-                // Complete the connection.  
-                client.EndConnect(ar);
+                // Completa la conexion  
+                cliente.EndConnect(ar);
 
                 Console.WriteLine("Socket connected to {0}",
-                    client.RemoteEndPoint.ToString());
+                    cliente.RemoteEndPoint.ToString());
 
-                // Signal that the connection has been made.  
+                // Señal de que la conexion ha sido realizada 
                 connectDone.Set();
             }
             catch (Exception e)
@@ -145,11 +152,11 @@ namespace AsyncCli
 
         private static void Send(Socket handler, Mensaje data)
         {
-            // Convert the message to JSON
+            // Convierte el mensaje a JSON
             var jsonData = JsonSerializer.Serialize(data);
             byte[] byteData = Encoding.UTF8.GetBytes(jsonData);
-            
-            // Begin sending the data to the remote device.  
+
+            // Comienza a enviar la informacion al dispositivo remoto  
             handler.BeginSend(byteData, 0, byteData.Length, 0,
                                 new AsyncCallback(SendCallback), handler);
         }
@@ -158,14 +165,14 @@ namespace AsyncCli
         {
             try
             {
-                // Retrieve the socket from the state object.  
-                Socket client = (Socket)ar.AsyncState;
+                // Recuera el socket del objeto de estado.  
+                Socket cliente = (Socket)ar.AsyncState;
 
-                // Complete sending the data to the remote device.  
-                int bytesSent = client.EndSend(ar);
+                // Termina de enviar la informacion al dispositivo remoto
+                int bytesSent = cliente.EndSend(ar);
                 Console.WriteLine("Sent {0} bytes to server.", bytesSent);
 
-                // Signal that all bytes have been sent.  
+                //Muestra una señal de que todos los bytes han sido enviados
                 sendDone.Set();
             }
             catch (Exception e)
@@ -174,16 +181,16 @@ namespace AsyncCli
             }
         }
 
-        private static void Receive(Socket client)
+        private static void Receive(Socket cliente)
         {
             try
             {
-                // Create the state object.  
+                // Crea el StateObject (Objeto de Estado)  
                 StateObject state = new StateObject();
-                state.workSocket = client;
+                state.workSocket = cliente;
 
-                // Begin receiving the data from the remote device.  
-                client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                //Comienza a recibir los datos del dispositivo remoto 
+                cliente.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                     new AsyncCallback(ReceiveCallback), state);
             }
             catch (Exception e)
@@ -196,44 +203,44 @@ namespace AsyncCli
         {
             try
             {
-                Console.Write("_"); // Trace
-                // Retrieve the state object and the client socket   
-                // from the asynchronous state object.  
+                Console.Write("_"); // Rastro
+                                    // Recupera el Objeto de Estado y el socket cliente
+                                    // del Objeto de Estado asincrono
                 StateObject state = (StateObject)ar.AsyncState;
-                Socket client = state.workSocket;
+                Socket cliente = state.workSocket;
 
-                // Read data from the remote device.  
-                int bytesRead = client.EndReceive(ar);
+                // Leer datos del dispositivo remoto 
+                int bytesRead = cliente.EndReceive(ar);
 
                 if (bytesRead > 0)
                 {
-                    Console.Write("1"); // Trace
-                    // There might be more data, so store the data received so far.  
+                    Console.Write("1"); // Rastro
+                                        // Pueden haber mas datos, asi que se almacena los recibidos hasta ahora
                     state.sb.Append(Encoding.ASCII.GetString(state.buffer, 0, bytesRead));
 
-                    // Get the rest of the data.  
-                    client.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
+                    // Obtener el resto de los datos
+                    cliente.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,
                         new AsyncCallback(ReceiveCallback), state);
                 }
                 else
                 {
-                    // All the data has arrived; put it in response.  
+                    // Todos los datos han llegado; poner los en respuesta
                     if (state.sb.Length > 1)
                     {
-                        Console.WriteLine("2"); // Trace
-                        // Deserialization of the object
+                        Console.WriteLine("2"); // Rastro
+                                                // Deserializacion del objeto
                         response = state.sb.ToString();
                         byte[] byteArray = Encoding.UTF8.GetBytes(response);
-                        
-                        // Deserialize the JSON string into a Mensaje object
+
+                        // Deserializar el JSON string en un objeto Mensaje
                         Mensaje recibido = JsonSerializer.Deserialize<Mensaje>(response);
                     }
                     else
                     {
-                        // If nothing has been received
-                        Console.Write("3"); // Trace
+                        // Si nada ha sido recibido
+                        Console.Write("3"); // Rastro
                     }
-                    // Signal that all bytes have been received.  
+                    // Señal de que todos los datos han sido recibidos
                     receiveDone.Set();
                 }
             }
@@ -243,5 +250,73 @@ namespace AsyncCli
             }
         }
 
+
+        private static string MenuPrincipal()
+        {
+            Console.WriteLine("Menu principal:");
+            Console.WriteLine("1.- Peliculas");
+            Console.WriteLine("2.- Clientes");
+            Console.WriteLine("Cualquier otra opcion - Salir del programa");
+            Console.WriteLine("Introduce una opcion:");
+            string menuSeleccionado = Console.ReadLine();
+
+
+            switch (menuSeleccionado)
+            {
+                case MenuConstants.MENU_PELICULA: return SubmenuPeliculas();
+                case MenuConstants.MENU_CLIENTE: return SubmenuClientes();
+                default: return MenuConstants.SALIR_DEL_PROGRAMA;
+            }
+
+        }
+
+        private static string SubmenuPeliculas()
+        {
+            Console.WriteLine("1.- Obtener todas las películas");
+            Console.WriteLine("2.- Obtener una película");
+            Console.WriteLine("3.- Obtener solo las peliculas alquiladas");
+            Console.WriteLine("4.- Obtener solo las peliculas sin alquilar");
+            Console.WriteLine("5.- Añadir una pelicula");
+            Console.WriteLine("6.- Eliminar una pelicula");
+            Console.WriteLine("Cualquier otra opcion - Volver al menu principal");
+            string opcionSeleccionada = Console.ReadLine();
+
+            switch (opcionSeleccionada)
+            {
+                case "1": return MenuConstants.OBTENER_TODAS_LAS_PELICULAS;
+                case "2": return MenuConstants.OBTENER_UNA_PELICULA;
+                case "3": return MenuConstants.OBTENER_PELICULAS_EN_ALQUILER;
+                case "4": return MenuConstants.OBTENER_PELICULAR_SIN_ALQUILAR;
+                case "5": return MenuConstants.ANADIR_UNA_PELICULA;
+                case "6": return MenuConstants.ELIMINAR_UNA_PELICULA;
+                default: return MenuPrincipal();
+            }
+
+        }
+
+        private static string SubmenuClientes()
+        {
+            Console.WriteLine("1.- Obtener todos los clientes");
+            Console.WriteLine("2.- Obtener un cliente en particular");
+            Console.WriteLine("3.- Obtener peliculas alquiladas de un cliente en particular");
+            Console.WriteLine("4.- Añadir un cliente");
+            Console.WriteLine("5.- Alquilar una Pelicula");
+            Console.WriteLine("6.- Desalquilar una Pelicula");
+            Console.WriteLine("7.- Eliminar un cliente");
+            Console.WriteLine("Cualquier otra opcion - Volver al menu principal");
+            string opcionSeleccionada = Console.ReadLine();
+            switch (opcionSeleccionada)
+            {
+                case "1": return MenuConstants.OBTENER_TODOS_LOS_CLIENTES;
+                case "2": return MenuConstants.OBTENER_UN_CLIENTE;
+                case "3": return MenuConstants.OBTENER_PELICULAS_ALQUILADAS_DE_UN_CLIENTE;
+                case "4": return MenuConstants.ANADIR_UN_CLIENTE;
+                case "5": return MenuConstants.ALQUILAR_UNA_PELICULA;
+                case "6": return MenuConstants.DESALQUILAR_UNA_PELICULA;
+                case "7": return MenuConstants.ELIMINAR_UN_CLIENTE;
+                default: return MenuPrincipal();
+            }
+        }
     }
+}
 }

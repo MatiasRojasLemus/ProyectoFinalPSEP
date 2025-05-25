@@ -32,11 +32,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asynccli\\AsyncCli\\AsyncCli.csproj",
+      "projectUniqueName": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asynccli\\AsyncCli\\AsyncCli.csproj",
       "projectName": "AsyncCli",
-      "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asynccli\\AsyncCli\\AsyncCli.csproj",
+      "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asynccli\\AsyncCli\\AsyncCli.csproj",
       "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-      "outputPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asynccli\\AsyncCli\\obj\\",
+      "outputPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asynccli\\AsyncCli\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -53,8 +53,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asynccli\\MsgLib\\MsgLib.csproj": {
-              "projectPath": "D:\\PSEP\\PRACTICA\\UT3\\RojasLemusMatias-AsyncSerializedKjut\\asynccli\\MsgLib\\MsgLib.csproj"
+            "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asynccli\\MsgLib\\MsgLib.csproj": {
+              "projectPath": "D:\\PSEP\\PRACTICA\\UT5\\ProyectoFinalPSEP\\ClienteServidor\\asynccli\\MsgLib\\MsgLib.csproj"
             }
           }
         }
