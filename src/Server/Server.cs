@@ -1,6 +1,4 @@
-﻿
-
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -13,6 +11,11 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using System.Net.Http.Headers;
 using Microsoft.IdentityModel.Tokens;
+using RSAencrypt;
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
 
 
 
@@ -44,6 +47,9 @@ namespace Server
         // Hilo de señal.  
         public static ManualResetEvent allDone = new ManualResetEvent(false);
         private static readonly HttpClient client = new HttpClient();
+        private static RSACryptoServiceProvider rsa_servidor;
+        private static RSACryptoServiceProvider rsa_cliente;
+
 
 
         public async static Task Main(String[] args)
@@ -143,14 +149,30 @@ namespace Server
                 }
                 if (state.sb.Length > 1)
                 {
-                    byte[] byteArray = Encoding.UTF8.GetBytes(state.sb.ToString());
+                    //TODO: Desciframos el mensaje
+
+                    var misRSAs = new rsa()
+                    {
+                        rsa_servidor = rsa_servidor,
+                        rsa_cliente = rsa_cliente
+                    };
+                    //Extraemos la clave publica del cliente
+                    rsa_cliente.FromXmlString(state.sb.ToString());
+                    var rsa_cliente_params = rsa_cliente.ExportParameters(false);
+
+                    //Solo tomaremos la clave publica del RSA_Servida y lo convertiremos en byte para pasarla despues
+                    byte[] clavePublica = Encoding.ASCII.GetBytes(rsa_servidor.ToXmlString(false));
+
+                    //Y el mensaje que hemos recibido del cliente lo desencriptamos
+                    var respDecrypt = rsa.Decrypt(state.sb.ToString(), rsa_servidor);
+
+                    //TODO END
 
                     // Deserializa el string JSON y lo convierte en un objeto Mensaje
-                    Mensaje recibido = JsonSerializer.Deserialize<Mensaje>(state.sb.ToString());
+                    Mensaje recibido = JsonSerializer.Deserialize<Mensaje>(respDecrypt);
                     StringBuilder sbRespuesta = new();
                     string url;
 
-                    //TODO:
                     switch (recibido.opcionCliente)
                     {
                         //Peliculas
@@ -168,12 +190,13 @@ namespace Server
                                         {
                                             sbRespuesta.AppendLine(pelicula.ToString());
                                         }
-                                        Send(handler, sbRespuesta.ToString());
+                                        var datos = rsa.Encrypt(sbRespuesta.ToString(), rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                     else
                                     {
-                                        String mensaje = "No se han encontrado películas";
-                                        Send(handler, mensaje);
+                                        var datos = rsa.Encrypt("No se han encontrado películas", rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                 }
                             }
@@ -191,13 +214,13 @@ namespace Server
                                 HttpResponseMessage response = await client.GetAsync(url);
                                 if (response.IsSuccessStatusCode)
                                 {
-                                    var pelicula = await response.Content.ReadAsStringAsync();
-                                    Send(handler, pelicula);
+                                    var datos = rsa.Encrypt(response.Content.ToString(), rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                                 else
                                 {
-                                    String mensaje = "No se ha encontrado ninguna pelicula con dicha ID";
-                                    Send(handler, mensaje);
+                                    var datos = rsa.Encrypt("No se ha encontrado ninguna pelicula con dicha ID", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                             }
                             catch (HttpRequestException e)
@@ -221,12 +244,13 @@ namespace Server
                                         {
                                             sbRespuesta.AppendLine(pelicula.ToString());
                                         }
-                                        Send(handler, sbRespuesta.ToString());
+                                        var datos = rsa.Encrypt(sbRespuesta.ToString(), rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                     else
                                     {
-                                        String mensaje = "No se han encontrado películas";
-                                        Send(handler, mensaje);
+                                        var datos = rsa.Encrypt("No se han encontrado películas", rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                 }
                             }
@@ -251,12 +275,13 @@ namespace Server
                                         {
                                             sbRespuesta.AppendLine(pelicula.ToString());
                                         }
-                                        Send(handler, sbRespuesta.ToString());
+                                        var datos = rsa.Encrypt(sbRespuesta.ToString(), rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                     else
                                     {
-                                        String mensaje = "No se han encontrado películas";
-                                        Send(handler, mensaje);
+                                        var datos = rsa.Encrypt("No se han encontrado películas", rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                 }
                             }
@@ -274,7 +299,9 @@ namespace Server
                                 var peli = recibido.Pelicula;
                                 HttpResponseMessage response = await client.PostAsJsonAsync(url, peli);
                                 response.EnsureSuccessStatusCode();
-                                Send(handler, peli.ToString());
+
+                                var datos = rsa.Encrypt(peli.ToString(), rsa_cliente_params);
+                                Send(handler, datos);
                             }
                             catch (HttpRequestException e)
                             {
@@ -290,12 +317,13 @@ namespace Server
                                 HttpResponseMessage response = await client.DeleteAsync(url);
                                 if (response.IsSuccessStatusCode)
                                 {
-                                    Send(handler, "Pelicula con la ID " + recibido.idPelicula + "ha sido eliminada correctamente");
+                                    var datos = rsa.Encrypt("Pelicula con la ID " + recibido.idPelicula + "ha sido eliminada correctamente", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                                 else
                                 {
-                                    String mensaje = "No se ha encontrado ninguna pelicula con esa ID que eliminar";
-                                    Send(handler, mensaje);
+                                    var datos = rsa.Encrypt("No se ha encontrado ninguna pelicula con esa ID que eliminar", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                             }
                             catch (HttpRequestException e)
@@ -321,12 +349,13 @@ namespace Server
                                         {
                                             sbRespuesta.AppendLine(cliente.ToString());
                                         }
-                                        Send(handler, sbRespuesta.ToString());
+                                        var datos = rsa.Encrypt(sbRespuesta.ToString(), rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                     else
                                     {
-                                        String mensaje = "No se han encontrado películas";
-                                        Send(handler, mensaje);
+                                        var datos = rsa.Encrypt("No se han encontrado peliculas", rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                 }
                             }
@@ -345,12 +374,13 @@ namespace Server
                                 if (response.IsSuccessStatusCode)
                                 {
                                     var cliente = await response.Content.ReadAsStringAsync();
-                                    Send(handler, cliente);
+                                    var datos = rsa.Encrypt(cliente, rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                                 else
                                 {
-                                    String mensaje = "No se ha encontrado ningun cliente con dicha ID";
-                                    Send(handler, mensaje);
+                                    var datos = rsa.Encrypt("No se ha encontrado ningun cliente con dicha ID", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                             }
                             catch (HttpRequestException e)
@@ -374,12 +404,14 @@ namespace Server
                                         {
                                             sbRespuesta.AppendLine(pelicula.ToString());
                                         }
-                                        Send(handler, sbRespuesta.ToString());
+                                        var datos = rsa.Encrypt(sbRespuesta.ToString(), rsa_cliente_params);
+                                        Send(handler, datos);
+
                                     }
                                     else
                                     {
-                                        String mensaje = "No se han encontrado películas alquiladas de este cliente";
-                                        Send(handler, mensaje);
+                                        var datos = rsa.Encrypt("No se han encontrado películas alquiladas de este cliente", rsa_cliente_params);
+                                        Send(handler, datos);
                                     }
                                 }
                             }
@@ -397,7 +429,8 @@ namespace Server
                                 var cliente = recibido.Cliente;
                                 HttpResponseMessage response = await client.PostAsJsonAsync(url, cliente);
                                 response.EnsureSuccessStatusCode();
-                                Send(handler, cliente.ToString());
+                                var datos = rsa.Encrypt(cliente.ToString(), rsa_cliente_params);
+                                Send(handler, datos);
 
                             }
                             catch (HttpRequestException e)
@@ -414,7 +447,8 @@ namespace Server
                                 var pelicula = recibido.Pelicula;
                                 HttpResponseMessage response = await client.PutAsJsonAsync(url, pelicula);
                                 response.EnsureSuccessStatusCode();
-                                Send(handler, pelicula.ToString());
+                                var datos = rsa.Encrypt(pelicula.ToString(), rsa_cliente_params);
+                                Send(handler, datos);
                             }
                             catch (HttpRequestException e)
                             {
@@ -436,7 +470,8 @@ namespace Server
                                 var pelicula = recibido.Pelicula;
                                 HttpResponseMessage response = await client.PutAsJsonAsync(url, pelicula);
                                 response.EnsureSuccessStatusCode();
-                                Send(handler, pelicula.ToString());
+                                var datos = rsa.Encrypt(pelicula.ToString(), rsa_cliente_params);
+                                Send(handler, datos);
                             }
                             catch (HttpRequestException e)
                             {
@@ -452,12 +487,13 @@ namespace Server
                                 HttpResponseMessage response = await client.DeleteAsync(url);
                                 if (response.IsSuccessStatusCode)
                                 {
-                                    Send(handler, "Cliente con la ID " + recibido.idCliente + "ha sido eliminada correctamente");
+                                    var datos = rsa.Encrypt("Cliente con la ID " + recibido.idCliente + "ha sido eliminada correctamente", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                                 else
                                 {
-                                    String mensaje = "No se ha encontrado ninguna pelicula con esa ID que eliminar";
-                                    Send(handler, mensaje);
+                                    var datos = rsa.Encrypt("No se ha encontrado ninguna pelicula con esa ID que eliminar", rsa_cliente_params);
+                                    Send(handler, datos);
                                 }
                             }
                             catch (HttpRequestException e)
@@ -499,7 +535,7 @@ namespace Server
 
                 // Termina de enviar los datos al dispositivo remoto.
                 int bytesSent = handler.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to client.", bytesSent);
+                Console.WriteLine("Sent {0} byte to client.", bytesSent);
 
                 handler.Shutdown(SocketShutdown.Both);
                 handler.Close();

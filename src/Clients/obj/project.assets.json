@@ -638,11 +638,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Clients\\Clients.csproj",
+      "projectUniqueName": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Clients\\Clients.csproj",
       "projectName": "Clients",
-      "projectPath": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Clients\\Clients.csproj",
+      "projectPath": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Clients\\Clients.csproj",
       "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Clients\\obj\\",
+      "outputPath": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Clients\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",
@@ -659,8 +659,8 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "projectReferences": {
-            "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Common\\Common.csproj": {
-              "projectPath": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Common\\Common.csproj"
+            "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Common\\Common.csproj": {
+              "projectPath": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Common\\Common.csproj"
             }
           }
         }

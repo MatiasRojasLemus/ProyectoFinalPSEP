@@ -4762,11 +4762,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Common\\Models\\Models.csproj",
+      "projectUniqueName": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Common\\Models\\Models.csproj",
       "projectName": "Models",
-      "projectPath": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Common\\Models\\Models.csproj",
+      "projectPath": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Common\\Models\\Models.csproj",
       "packagesPath": "C:\\Users\\34654\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\34654\\Escritorio\\PSEP_MATIAS\\PSEP MATIAS\\src\\Common\\Models\\obj\\",
+      "outputPath": "C:\\Users\\34654\\Escritorio\\ProyectoFinalPSEP\\ProyectoFinalPSEP\\src\\Common\\Models\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\34654\\AppData\\Roaming\\NuGet\\NuGet.Config",

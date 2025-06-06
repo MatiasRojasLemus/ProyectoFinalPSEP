@@ -3,6 +3,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using Common;
+using System.Security.Cryptography;
+using RSAencrypt;
 
 
 
@@ -38,7 +40,9 @@ namespace Clients
 
         // La respuesta desde el dispositivo remoto.  
         private static String response = String.Empty;
-        
+        private static RSACryptoServiceProvider rsa_servidor;
+        private static RSACryptoServiceProvider rsa_cliente;
+
 
         public static int Main(String[] args)
         {
@@ -232,9 +236,9 @@ namespace Clients
 
                 // Termina de enviar la informacion al dispositivo remoto
                 int bytesSent = cliente.EndSend(ar);
-                Console.WriteLine("Sent {0} bytes to server.", bytesSent);
+                Console.WriteLine("Sent {0} byte to server.", bytesSent);
 
-                //Muestra una señal de que todos los bytes han sido enviados
+                //Muestra una señal de que todos los byte han sido enviados
                 sendDone.Set();
             }
             catch (Exception e)
@@ -289,12 +293,30 @@ namespace Clients
                     // Todos los datos han llegado; poner los en respuesta
                     if (state.sb.Length > 1)
                     {
-                        Console.WriteLine("2"); // Rastro
-                                                // Deserializacion del objeto
-                        response = state.sb.ToString();
-                        byte[] byteArray = Encoding.UTF8.GetBytes(response);
+                        //TODO: 
+                        //Recuperamos la clave publica del servidor
 
-                        // Deserializar el JSON string en un objeto Mensaje
+                        var misRSAs = new rsa()
+                        {
+                            rsa_servidor = rsa_servidor,
+                            rsa_cliente = rsa_cliente
+                        };
+                        //Extraemos la clave publica del servidor
+                        rsa_servidor.FromXmlString(state.sb.ToString());
+                        var rsa_servidor_params = rsa_cliente.ExportParameters(false);
+
+                        //Solo tomaremos la clave publica del RSA_Cliente y lo convertiremos en byte para enviarla despues
+                        byte[] clavePublica = Encoding.ASCII.GetBytes(rsa_cliente.ToXmlString(false));
+
+                        //Y el mensaje que hemos recibido del cliente lo desencriptamos
+                        var respDecrypt = (String)rsa.Decrypt(state.sb.ToString(), rsa_cliente);
+
+
+                        //TODO END
+                        Console.WriteLine("2"); // Rastro
+        
+                        byte[] byteArray = Encoding.UTF8.GetBytes(respDecrypt);
+
                         string recibido = System.Text.Encoding.UTF8.GetString(byteArray, 0, byteArray.Length);
                         Console.WriteLine(recibido);
                     }
@@ -335,7 +357,7 @@ namespace Clients
 
         private static string SubmenuPeliculas()
         {
-            
+
             Console.WriteLine("Menu Películas:");
             Console.WriteLine("1.- Obtener todas las películas");
             Console.WriteLine("2.- Obtener una película");
@@ -346,7 +368,7 @@ namespace Clients
             Console.WriteLine("Cualquier otra opcion - Volver al menu principal");
             string opcionSeleccionada = Console.ReadLine();
 
-            
+
             switch (opcionSeleccionada)
             {
                 case "1": Console.WriteLine("Opcion seleccionada: OBTENER_TODAS_LAS_PELICULAS"); return MenuConstants.OBTENER_TODAS_LAS_PELICULAS;
@@ -362,7 +384,7 @@ namespace Clients
 
         private static string SubmenuClientes()
         {
-            
+
             Console.WriteLine("Menu Clientes:");
             Console.WriteLine("1.- Obtener todos los clientes");
             Console.WriteLine("2.- Obtener un cliente en particular");
@@ -374,7 +396,7 @@ namespace Clients
             Console.WriteLine("Cualquier otra opcion - Volver al menu principal");
             string opcionSeleccionada = Console.ReadLine();
 
-            
+
             switch (opcionSeleccionada)
             {
                 case "1": Console.WriteLine("Opcion seleccionada: OBTENER_TODOS_LOS_CLIENTES"); return MenuConstants.OBTENER_TODOS_LOS_CLIENTES;
@@ -429,7 +451,7 @@ namespace Clients
             Console.WriteLine("Introduce su segundo apellido:");
             string apellido2 = Console.ReadLine();
 
-            return new Cliente(id,nombre, apellido1, apellido2);
+            return new Cliente(id, nombre, apellido1, apellido2);
         }
 
         private static string ObtenerIdPeliculaCA()
@@ -461,7 +483,7 @@ namespace Clients
         {
             int myInt;
             double myDouble;
-            
+
             return (
 
                 (inputString is not null && int.TryParse(inputString, out myInt))
